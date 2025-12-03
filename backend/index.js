@@ -1,93 +1,76 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons = [
-  {
-    id: '1',
-    name: 'HTML is easy',
-    number: true,
-  },
-  {
-    id: '2',
-    name: 'Browser can execute only JavaScript',
-    number: false,
-  },
-  {
-    id: '3',
-    name: 'GET and POST are the most important methods of HTTP protocol',
-    number: true,
-  },
+  { id: '1', name: 'HTML is easy', number: '12345' },
+  { id: '2', name: 'Browser can execute only JavaScript', number: '67890' },
+  { id: '3', name: 'GET and POST are the most important methods of HTTP protocol', number: '54321' },
 ]
 
-const requestLogger = (request, response, next) => {
-  console.log('Method:', request.method)
-  console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body)
+// Logger middleware
+const requestLogger = (req, res, next) => {
+  console.log('Method:', req.method)
+  console.log('Path:  ', req.path)
+  console.log('Body:  ', req.body)
   console.log('---')
   next()
 }
 
 app.use(requestLogger)
+
+// Serve frontend (if built)
 app.use(express.static('dist'))
-app.use(express.json())
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+// Get all persons
+app.get('/api/persons', (req, res) => {
+  res.json(persons)
 })
 
-app.get('/api/persons', (request, response) => {
-  response.json(persons)
-})
-
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find((person) => person.id === id)
-
+// Get one person
+app.get('/api/persons/:id', (req, res) => {
+  const person = persons.find(p => p.id === req.params.id)
   if (person) {
-    response.json(person)
+    res.json(person)
   } else {
-    response.status(404).end()
+    res.status(404).end()
   }
 })
 
+// Generate new ID
 const generateId = () => {
-  const maxId =
-    persons.length > 0 ? Math.max(...persons.map((n) => Number(n.id))) : 0
+  const maxId = persons.length > 0 ? Math.max(...persons.map(p => Number(p.id))) : 0
   return String(maxId + 1)
 }
 
-app.post('/api/persons', (request, response) => {
-  const body = request.body
+// Add new person
+app.post('/api/persons', (req, res) => {
+  const body = req.body
 
-  if (!body.content) {
-    return response.status(400).json({
-      error: 'content missing',
-    })
+  if (!body.name || !body.number) {
+    return res.status(400).json({ error: 'name or number missing' })
   }
 
   const person = {
-    content: body.content,
-    important: body.important || false,
     id: generateId(),
+    name: body.name,
+    number: body.number,
   }
 
-  persons = person.concat(person)
-
-  response.json(person)
+  persons = persons.concat(person)
+  res.json(person)
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter((person) => person.id !== id)
-
-  response.status(204).end()
+// Delete person
+app.delete('/api/persons/:id', (req, res) => {
+  persons = persons.filter(p => p.id !== req.params.id)
+  res.status(204).end()
 })
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
-
-app.use(unknownEndpoint)
+// Handle unknown endpoints
+app.use((req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+})
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
