@@ -11,13 +11,14 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    personServices
-      .getAll()
-      .then(initialPersons => {
-        setNames(initialPersons)
-      })
-  }, [])
+  personServices.getAll().then(initialPersons => {
+    console.log('Initial persons from backend:', initialPersons)
+    setNames(initialPersons)
+  })
+}, [])
 
+
+  console.log(typeof(names))
   console.log(names.map(n => n.name))
 
   //Filter names shown by typing in the field
