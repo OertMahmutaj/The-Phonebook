@@ -3,9 +3,9 @@ const app = express()
 app.use(express.json())
 
 let persons = [
-  { id: '1', name: 'HTML is easy', number: '12345' },
-  { id: '2', name: 'Browser can execute only JavaScript', number: '67890' },
-  { id: '3', name: 'GET and POST are the most important methods of HTTP protocol', number: '54321' },
+  { id: '1', name: 'Ciao', number: '12345' },
+  { id: '2', name: 'Silvia', number: '67890' },
+  { id: '3', name: 'Balasini ❤️', number: '54321' },
 ]
 
 // Logger middleware
