@@ -46,10 +46,10 @@ const App = () => {
     ) {
       // Update the existing person's number
       personServices
-        .update(existingPerson.id, nameObject)
+        .update(existingPerson._id, nameObject)
         .then(returnedPerson => {
           setNames(
-            names.map(n => (n.id === existingPerson.id ? returnedPerson : n))
+            names.map(n => (n._id === existingPerson._id ? returnedPerson : n))
           )
           setNewName('')
           setNewNumber('')
