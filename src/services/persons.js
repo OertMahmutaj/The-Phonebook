@@ -3,7 +3,15 @@ const baseUrl = '/api/persons'
 
 const getAll = () => axios.get(baseUrl).then(res => res.data)
 
-const create = newPerson => axios.post(baseUrl, newPerson).then(res => res.data)
+const create = newPerson =>
+  axios
+    .post(baseUrl, newPerson)
+    .then(res => res.data)
+    .catch(error => {
+      // Forward the error so the component can handle it
+      throw error.response?.data?.error || 'Something went wrong'
+    })
+
 
 const update = (id, updatedPerson) => axios.put(`${baseUrl}/${id}`, updatedPerson).then(res => res.data)
 

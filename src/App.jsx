@@ -57,11 +57,16 @@ const App = () => {
     }
   } else {
     // Add new person
-    personServices.create(nameObject).then(returnedPerson => {
-      setNames([...names, returnedPerson])
-      setNewName('')
-      setNewNumber('')
-    })
+    personServices.create(nameObject)
+  .then(returnedPerson => {
+    setNames([...names, returnedPerson])
+    setNewName('')
+    setNewNumber('')
+  })
+  .catch(errorMessage => {
+    // Display the error to the user
+    alert(errorMessage)
+  })
   }
 }
 
