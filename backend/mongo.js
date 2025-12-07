@@ -1,6 +1,5 @@
-require('dotenv').config()   // Load environment variables from .env
+require('dotenv').config() // Load environment variables from .env
 const mongoose = require('mongoose')
-
 const password = process.env.MONGO_PASSWORD
 
 if (!password) {
@@ -12,7 +11,8 @@ const url = `mongodb+srv://oert64:${password}@maincluster.2b6kbwx.mongodb.net/pe
 
 mongoose.set('strictQuery', false)
 
-mongoose.connect(url)
+mongoose
+  .connect(url)
   .then(() => {
     console.log('Connected to MongoDB')
 
@@ -24,16 +24,16 @@ mongoose.connect(url)
     const Person = mongoose.model('Person', personSchema)
 
     const person = new Person({
-      name: 'Ciao', 
-      number: '12345'
+      name: 'Ciao',
+      number: '12345',
     })
 
     return person.save()
   })
-  .then(savedPerson => {
+  .then((savedPerson) => {
     console.log('Person saved:', savedPerson)
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Error:', err.message)
   })
   .finally(() => {

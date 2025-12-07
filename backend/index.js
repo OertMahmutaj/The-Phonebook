@@ -2,6 +2,7 @@ const express = require('express')
 const Person = require('./models/person')
 const errorHandler = require('./middlewares/errorHandler')
 require('dotenv').config()
+
 const app = express()
 app.use(express.json())
 
@@ -16,15 +17,12 @@ const requestLogger = (req, res, next) => {
 
 app.use(requestLogger)
 
-
 // Get all persons
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
 })
-
-console.log(Person)
 
 // Get one person
 app.get('/api/persons/:id', (request, response, next) => {
@@ -39,15 +37,10 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// Generate new ID
-// const generateId = () => {
-//   const maxId = persons.length > 0 ? Math.max(...persons.map(p => Number(p.id))) : 0
-//   return String(maxId + 1)
-// }
-
 // Add new person
 app.post('/api/persons', (request, response, next) => {
-  console.log('Received body:', request.body) // << here!
+  console.log('Received body:', request.body)
+
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -56,15 +49,16 @@ app.post('/api/persons', (request, response, next) => {
 
   const person = new Person({
     name: body.name,
-    number: body.number,
+    number: body.number
   })
 
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
-  .catch(error => next(error))
+  person
+    .save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => next(error))
 })
-
 
 // Delete person
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -75,10 +69,9 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-// Updating person
+// Update person
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
-  console.log(request)
 
   Person.findById(request.params.id)
     .then(person => {
@@ -89,14 +82,14 @@ app.put('/api/persons/:id', (request, response, next) => {
       person.name = name
       person.number = number
 
-      return person.save().then((updatedPerson) => {
+      return person.save().then(updatedPerson => {
         response.json(updatedPerson)
       })
     })
     .catch(error => next(error))
 })
 
-// Serve frontend (if built)
+// Serve frontend
 app.use(express.static('dist'))
 
 // Handle unknown endpoints
@@ -104,6 +97,7 @@ app.use((req, res) => {
   res.status(404).send({ error: 'unknown endpoint' })
 })
 
+// Error handler
 app.use(errorHandler)
 
 const PORT = process.env.PORT
